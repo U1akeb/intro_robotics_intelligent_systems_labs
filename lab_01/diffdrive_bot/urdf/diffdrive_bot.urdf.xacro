@@ -179,12 +179,39 @@
     <origin xyz="${chassis_length/2 + 0.015} 0 0" />
   </joint>
 
-  <!-- TODO (exercise Step 1): depth camera on the back face, looking along -x.
-       Add the link depth_camera_link (visual, collision, inertial) and a fixed joint
-       to base_link, turned half a turn about z. -->
+  <!-- Depth camera on the back face, looking backwards -->
+  <link name="depth_camera_link">
+    <visual>
+      <geometry>
+        <box size="${camera_size}" />
+      </geometry>
+      <material name="blue" />
+    </visual>
+    <collision>
+      <geometry>
+        <box size="${camera_size}" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="${camera_mass}" />
+      <xacro:box_inertia m="${camera_mass}" x="0.03" y="0.08" z="0.03" />
+    </inertial>
+  </link>
 
-  <!-- TODO (exercise Step 1): IMU at the centre of the chassis.
-       Add the link imu_link and a fixed joint to base_link. -->
+  <joint name="depth_camera_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="depth_camera_link" />
+    <origin xyz="${-chassis_length/2 - 0.015} 0 0" rpy="0 0 ${pi}" />
+  </joint>
+
+  <!-- IMU at the centre of the chassis -->
+  <link name="imu_link" />
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="imu_link" />
+    <origin xyz="0 0 0" />
+  </joint>
 
   <!-- Frictionless caster so it slides instead of dragging -->
   <gazebo reference="caster">
@@ -249,11 +276,38 @@
     </sensor>
   </gazebo>
 
-  <!-- TODO (exercise Step 1): Gazebo sensor of type depth_camera for depth_camera_link,
-       publishing on /depth_camera, with its camera_info_topic set to
-       /depth_camera/camera_info -->
+  <!-- Depth camera Gazebo sensor -->
+  <gazebo reference="depth_camera_link">
+    <sensor name="depth_camera" type="depth_camera">
+      <topic>/depth_camera</topic>
+      <gz_frame_id>depth_camera_link</gz_frame_id>
+      <update_rate>10</update_rate>
+      <always_on>true</always_on>
+      <camera>
+        <camera_info_topic>/depth_camera/camera_info</camera_info_topic>
+        <horizontal_fov>1.047</horizontal_fov>
+        <image>
+          <width>320</width>
+          <height>240</height>
+          <format>R_FLOAT32</format>
+        </image>
+        <clip>
+          <near>0.1</near>
+          <far>10.0</far>
+        </clip>
+      </camera>
+    </sensor>
+  </gazebo>
 
-  <!-- TODO (exercise Step 1): Gazebo sensor of type imu for imu_link, publishing on /imu -->
+  <!-- IMU Gazebo sensor -->
+  <gazebo reference="imu_link">
+    <sensor name="imu" type="imu">
+      <topic>/imu</topic>
+      <gz_frame_id>imu_link</gz_frame_id>
+      <update_rate>50</update_rate>
+      <always_on>true</always_on>
+    </sensor>
+  </gazebo>
 
   <!-- Gazebo plugins -->
   <gazebo>

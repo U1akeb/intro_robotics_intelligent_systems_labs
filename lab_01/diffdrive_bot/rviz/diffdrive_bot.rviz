@@ -45,6 +45,18 @@ Visualization Manager:
       Topic:
         Value: /camera/image
 
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Name: DepthCamera
+      Topic:
+        Value: /depth_camera/image
+
+    - Class: rviz_default_plugins/PointCloud2
+      Enabled: true
+      Name: DepthPointCloud
+      Topic:
+        Value: /depth_camera/points
+
   Global Options:
     Background Color: 48; 48; 48
     Fixed Frame: base_footprint
