@@ -20,9 +20,25 @@ This repository contains the complete solution for **Lab 1: ROS 2 and Custom Rob
 
 ---
 
+## Screenshots (Step 1 & Step 7)
+
+### 1. Step 1: RViz Depth Camera & PointCloud2 Visualization
+Shows `/depth_camera/image` and `/depth_camera/points` visualizing the wall behind the robot model from the newly added `depth_camera_link`:
+
+![RViz Depth Camera Display](screenshots/rviz_depth_camera.png)
+
+---
+
+### 2. Step 7: Computation Graph (`rqt_graph`) during `square.launch.py`
+Shows active ROS 2 nodes, topics, services, and action client/server connections while the robot executes the autonomous square driving trajectory:
+
+![rqt_graph during square.launch.py](screenshots/rqt_graph_square.png)
+
+---
+
 ## Building the Workspace
 
-1. Ensure ROS 2 environment is sourced (make sure active conda environments are deactivated):
+1. Ensure the ROS 2 environment is sourced (make sure active conda environments are deactivated):
    ```bash
    conda deactivate
    source /opt/ros/jazzy/setup.bash
@@ -60,7 +76,7 @@ This repository contains the complete solution for **Lab 1: ROS 2 and Custom Rob
      ros2 topic hz /imu
      # Output: ~50 Hz
      ```
-  4. In RViz, add an **Image** display for `/depth_camera/image` and a **PointCloud2** display for `/depth_camera/points`.
+  4. In RViz, displays for `/depth_camera/image` and `/depth_camera/points` are pre-configured.
 
 ---
 
@@ -133,18 +149,14 @@ This repository contains the complete solution for **Lab 1: ROS 2 and Custom Rob
 
 ---
 
-## Required Screenshots for Submission
+## What Did Not Work and Why (Technical Analysis)
 
-1. **RViz Depth Camera Display** (`screenshots/rviz_depth_camera.png`):
-   - Shows `/depth_camera/image` and `/depth_camera/points` visualizing the wall behind the robot.
-2. **rqt_graph** (`screenshots/rqt_graph_square.png`):
-   - Shows the active nodes and topic/action connections while `square.launch.py` is running:
-     ```bash
-     ros2 run rqt_graph rqt_graph
-     ```
+1. **Anaconda Python vs ROS 2 Interface Generator (`rosidl_adapter`):**
+   - *Problem:* When building `my_robot_interfaces`, `colcon build` initially failed with `ModuleNotFoundError: No module named 'em'`.
+   - *Cause:* The active Anaconda base environment in `$PATH` hijacked the Python interpreter during CMake generation, but lacked the ROS 2 IDL dependencies (`empy`).
+   - *Solution:* Deactivating Conda (`conda deactivate`) and enforcing the system Python interpreter via `--cmake-args -DPython3_EXECUTABLE=/usr/bin/python3` solved the build conflict.
 
----
-
-## Notes & Observations
-- **Anaconda Python Collision:** If Anaconda is in `PATH`, `rosidl_adapter` may fail due to Python path mismatches. Deactivating conda or specifying `-DPython3_EXECUTABLE=/usr/bin/python3` during `colcon build` guarantees clean compilation.
-- **Angle Wrap-around:** Because yaw angles jump between $+\pi$ and $-\pi$ when facing backwards, computing heading changes via consecutive differences (`angle_difference`) rather than subtracting the initial yaw ensures continuous and reliable rotation tracking.
+2. **Heading Angle Discontinuity across $\pm\pi$:**
+   - *Problem:* In the `/rotate` action server, subtracting the initial yaw angle from the current yaw angle caused sharp wrap-around jumps when the robot turned past the negative X-axis ($+\pi \to -\pi$).
+   - *Cause:* Quaternions converted to Euler yaw are constrained to $[-\pi, \pi]$.
+   - *Solution:* Implemented incremental difference integration (`angle_difference(current_yaw, prev_yaw)`), accumulating small delta changes between consecutive `/odom` messages to guarantee monotonic turn tracking.
