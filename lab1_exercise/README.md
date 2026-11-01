@@ -20,19 +20,10 @@ This repository contains the complete solution for **Lab 1: ROS 2 and Custom Rob
 
 ---
 
-## Screenshots (Step 1 & Step 7)
+## Screenshots
 
-### 1. Step 1: RViz Depth Camera & PointCloud2 Visualization
-Shows `/depth_camera/image` and `/depth_camera/points` visualizing the wall behind the robot model from the newly added `depth_camera_link`:
-
-![RViz Depth Camera Display](screenshots/rviz_depth_camera.png)
-
----
-
-### 2. Step 7: Computation Graph (`rqt_graph`) during `square.launch.py`
-Shows active ROS 2 nodes, topics, services, and action client/server connections while the robot executes the autonomous square driving trajectory:
-
-![rqt_graph during square.launch.py](screenshots/rqt_graph_square.png)
+- **RViz Depth Camera Display:** `screenshots/rviz_depth_camera.png`
+- **rqt_graph Execution:** `screenshots/rqt_graph_square.png`
 
 ---
 
@@ -76,7 +67,6 @@ Shows active ROS 2 nodes, topics, services, and action client/server connections
      ros2 topic hz /imu
      # Output: ~50 Hz
      ```
-  4. In RViz, displays for `/depth_camera/image` and `/depth_camera/points` are pre-configured.
 
 ---
 
@@ -97,19 +87,10 @@ Shows active ROS 2 nodes, topics, services, and action client/server connections
      ```
   3. Terminal 3 (Control & Inspect):
      ```bash
-     # Enable the node to start driving:
      ros2 service call /turn_away_enable std_srvs/srv/SetBool "{data: true}"
-
-     # Inspect status topic:
      ros2 topic echo /robot_status
-
-     # Change speed dynamically via service:
      ros2 service call /set_turn_speed my_robot_interfaces/srv/SetTurnSpeed "{turn_speed: 0.8}"
-
-     # Change forward speed via parameter:
      ros2 param set /turn_away forward_speed 0.35
-
-     # Disable the node (stops the robot):
      ros2 service call /turn_away_enable std_srvs/srv/SetBool "{data: false}"
      ```
 
@@ -133,7 +114,6 @@ Shows active ROS 2 nodes, topics, services, and action client/server connections
      ```bash
      ros2 action send_goal --feedback /rotate my_robot_interfaces/action/Rotate "{angle: 1.57}"
      ```
-     *The robot rotates 90° counter-clockwise, and feedback counts up to ~1.57 rad.*
 
 ---
 
@@ -145,7 +125,6 @@ Shows active ROS 2 nodes, topics, services, and action client/server connections
   ```bash
   ros2 launch my_robot_nodes square.launch.py side_length:=0.8
   ```
-  *The robot autonomously drives an 0.8 m square and returns to its initial spot.*
 
 ---
 
