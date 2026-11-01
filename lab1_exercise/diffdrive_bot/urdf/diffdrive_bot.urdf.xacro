@@ -19,7 +19,8 @@
   <xacro:property name="camera_size" value="0.03 0.08 0.03" />
   <xacro:property name="camera_mass" value="0.1" />
 
-  <!-- TODO (exercise Step 1): properties for the depth camera's size and mass -->
+  <xacro:property name="depth_camera_size" value="0.03 0.08 0.03" />
+  <xacro:property name="depth_camera_mass" value="0.1" />
 
   <xacro:macro name="box_inertia" params="m x y z">
     <inertia ixx="${m*(y*y+z*z)/12}" ixy="0" ixz="0" iyy="${m*(x*x+z*z)/12}" iyz="0" izz="${m*(x*x+y*y)/12}" />
@@ -183,18 +184,18 @@
   <link name="depth_camera_link">
     <visual>
       <geometry>
-        <box size="${camera_size}" />
+        <box size="${depth_camera_size}" />
       </geometry>
       <material name="blue" />
     </visual>
     <collision>
       <geometry>
-        <box size="${camera_size}" />
+        <box size="${depth_camera_size}" />
       </geometry>
     </collision>
     <inertial>
-      <mass value="${camera_mass}" />
-      <xacro:box_inertia m="${camera_mass}" x="0.03" y="0.08" z="0.03" />
+      <mass value="${depth_camera_mass}" />
+      <xacro:box_inertia m="${depth_camera_mass}" x="0.03" y="0.08" z="0.03" />
     </inertial>
   </link>
 
