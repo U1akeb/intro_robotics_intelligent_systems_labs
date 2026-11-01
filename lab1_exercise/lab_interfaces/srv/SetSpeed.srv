@@ -1,5 +1,0 @@
-# Set the robot's forward speed
-float32 speed     # m/s
----
-bool success
-string message
